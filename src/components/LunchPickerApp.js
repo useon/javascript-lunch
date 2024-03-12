@@ -1,55 +1,44 @@
 import Component from './Component';
-import RestaurantRepository from '../domain/RestaurantRepository';
 import { $, $setAttribute } from '../utils/dom';
-import { OPTION } from '../constants/Condition';
 
 class LunchPickerApp extends Component {
-  #restaurants;
+  #category;
+  #sorting;
 
   constructor() {
     super();
-    this.#restaurants = RestaurantRepository.transformRestaurants('전체', '이름순');
+    this.handleSelectChange = () => this.#updateSelectType();
+    this.handleGnbButtonClick = () => $setAttribute('restaurant-add-modal', 'open', 'true');
+    this.handleCancelButtonClick = () => $setAttribute('restaurant-add-modal', 'open', 'false');
   }
 
   setEvent() {
-    this.addEventListener('selectChange', () => this.#generateRestaurants());
-    this.addEventListener('gnbButtonClick', () => $setAttribute('restaurant-add-modal', 'open', 'true'));
-    this.addEventListener('cancelButtonClick', () => $setAttribute('restaurant-add-modal', 'open', 'false'));
-    this.addEventListener('submitButtonClick', (event) => {
-      this.#updateRestaurants(event.detail);
-      $setAttribute('restaurant-add-modal', 'open', 'false');
-    });
+    this.addEventListener('selectChange', this.handleSelectChange);
+    this.addEventListener('gnbButtonClick', this.handleGnbButtonClick);
+    this.addEventListener('cancelButtonClick', this.handleCancelButtonClick);
   }
 
   removeEvent() {
-    this.removeEventListener('selectChange');
-    this.removeEventListener('gnbButtonClick');
-    this.removeEventListener('cancelButtonClick');
-    this.removeEventListener('submitButtonClick');
+    this.removeEventListener('selectChange', this.handleSelectChange);
+    this.removeEventListener('gnbButtonClick', this.handleGnbButtonClick);
+    this.removeEventListener('cancelButtonClick', this.handleCancelButtonClick);
   }
 
-  #updateRestaurants(restaurant) {
-    RestaurantRepository.addRestaurant(restaurant);
-    this.#restaurants = this.#generateRestaurants();
-  }
-
-  #generateRestaurants() {
-    const category = $('.category').value;
-    const sorting = $('.sorting').value;
-
-    this.#restaurants = RestaurantRepository.transformRestaurants(category, sorting);
-
-    $setAttribute('restaurant-list', 'restaurants', `${JSON.stringify(this.#restaurants)}`);
+  #updateSelectType() {
+    this.#category = $('.category').value;
+    this.#sorting = $('.sorting').value;
+    $setAttribute('restaurant-list', 'category', this.#category);
+    $setAttribute('restaurant-list', 'sorting', this.#sorting);
   }
 
   template() {
     return `
       <lunch-picker-header></lunch-picker-header>
       <section class="restaurant-filter-container">
-          <filter-box type="category" option='${JSON.stringify([OPTION.ALL, ...OPTION.CATEGORY])}'></filter-box>
-          <filter-box type="sorting" option='${JSON.stringify(OPTION.SORTING)}'></filter-box>
+          <filter-box type="category"></filter-box>
+          <filter-box type="sorting"></filter-box>
       </section>
-      <restaurant-list restaurants='${JSON.stringify(this.#restaurants)}'></restaurant-list>
+      <restaurant-list category=${this.#category} sorting=${this.#sorting}></restaurant-list>
       <restaurant-add-modal open="false"></restaurant-add-modal>
     `;
   }

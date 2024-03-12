@@ -21,3 +21,13 @@ export const OPTION = {
     { value: '거리순', name: '거리순' },
   ],
 } as const;
+
+export const FILTER_OPTIONS = {
+  category: [OPTION.ALL, ...OPTION.CATEGORY],
+  sorting: OPTION.SORTING,
+} as const;
+
+export const INPUT_OPTIONS = {
+  modalCategory: [OPTION.INFO, ...OPTION.CATEGORY],
+  modalDistance: [OPTION.INFO, ...OPTION.DISTANCE],
+} as const;

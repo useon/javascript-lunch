@@ -6,7 +6,7 @@ import asianCategoryImg from '../assets/category-asian.png';
 import westernCategoryImg from '../assets/category-western.png';
 import etcCategoryImg from '../assets/category-etc.png';
 
-class RestaurantInfo extends Component {
+class RestaurantItem extends Component {
   static observedAttributes = ['category', 'name', 'distance', 'description', 'reference'];
 
   #category;
@@ -23,7 +23,7 @@ class RestaurantInfo extends Component {
     this.#description = this.getAttribute('description');
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
+  attributeChangedCallback() {
     this.#category = this.getAttribute('category');
     this.#name = this.getAttribute('name');
     this.#distance = this.getAttribute('distance');
@@ -32,7 +32,7 @@ class RestaurantInfo extends Component {
     this.render();
   }
 
-  displayCategoryIcon(category) {
+  #displayCategoryIcon(category) {
     switch (category) {
       case '한식':
         return `<img src=${koreanCategoryImg} alt="한식" class="category-icon" />`;
@@ -55,18 +55,18 @@ class RestaurantInfo extends Component {
     return `
       <li class="restaurant">
         <div class="restaurant__category">
-          ${this.displayCategoryIcon(this.#category)}
+          ${this.#displayCategoryIcon(this.#category)}
         </div>
-        <div class="restaurant__info">
-          <h3 class="restaurant__name text-subtitle">${this.#name}</h3>
+        <div class="restaurant__item">
+          <h2 class="restaurant__name text-subtitle">${this.#name}</h3>
           <span class="restaurant__distance text-body">캠퍼스부터 ${this.#distance}분 내</span>
           <p class="restaurant__description text-body">
             ${this.#description !== undefined ? this.#description : ''}
           </p>
-      </div>
+        </div>
       </li>
     `;
   }
 }
 
-export default RestaurantInfo;
+export default RestaurantItem;

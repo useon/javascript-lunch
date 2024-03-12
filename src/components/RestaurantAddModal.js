@@ -1,15 +1,10 @@
 import Component from './Component';
-import { OPTION } from '../constants/Condition';
-import { ERROR } from '../constants/Message';
+import { ERROR } from '../constants/messages';
 import { $, $addEvent, $removeEvent } from '../utils/dom';
 import { isEmptyInput } from '../utils/validation';
 
 class RestaurantAddModal extends Component {
   static observedAttributes = ['open'];
-
-  constructor() {
-    super();
-  }
 
   attributeChangedCallback(name, oldValue, newValue) {
     this.render();
@@ -18,13 +13,13 @@ class RestaurantAddModal extends Component {
   }
 
   setEvent() {
-    $addEvent('.button--primary', 'click', (event) => this.#onSubmit(event));
-    $addEvent('.button--secondary', 'click', () => this.#onCancel());
+    $addEvent('.modal-form', 'submit', this.#handleOnSubmit.bind(this));
+    $addEvent('.button--secondary', 'click', this.#handleOnCancel.bind(this));
   }
 
   removeEvent() {
-    $removeEvent('.button--primary', 'click', (event) => this.#onSubmit(event));
-    $removeEvent('.button--secondary', 'click', () => this.#onCancel());
+    $removeEvent('.modal-form', 'submit', this.#handleOnSubmit.bind(this));
+    $removeEvent('.button--secondary', 'click', this.#handleOnCancel.bind(this));
   }
 
   #updateModal(isOpen) {
@@ -35,25 +30,24 @@ class RestaurantAddModal extends Component {
     }
   }
 
-  #onSubmit(event) {
+  #handleOnSubmit(event) {
     event.preventDefault();
-
     if (this.#handleEmptyError(['.modal-category', '.modal-restaurant-name', '.modal-distance'])) {
       return;
     }
 
     const formData = {
-      category: $('.modal-category').value,
+      category: $('.modalCategory').value,
       name: $('.modal-restaurant-name').value,
-      distance: $('.modal-distance').value,
+      distance: $('.modalDistance').value,
       description: $('.modal-description').value,
       reference: $('.modal-reference').value,
     };
-
     this.makeCustomEvent('submitButtonClick', formData);
+    this.#updateModal(false);
   }
 
-  #onCancel() {
+  #handleOnCancel() {
     this.makeCustomEvent('cancelButtonClick');
   }
 
@@ -82,13 +76,10 @@ class RestaurantAddModal extends Component {
               <div class="modal-backdrop"></div>
               <div class="modal-container">
                   <h2 class="modal-title text-title">새로운 음식점</h2>
-                  <form>
+                  <form class="modal-form">
                       <div class="form-item form-item--required">
                           <label for="category text-caption">카테고리</label>
-                          <filter-box type="modal-category" option='${JSON.stringify([
-                            OPTION.INFO,
-                            ...OPTION.CATEGORY,
-                          ])}'></filter-box>
+                          <filter-box type="modalCategory" class="modal-category" ></filter-box>
                           <p class="modal-category-error-message"></p>
                       </div>
                       <div class="form-item form-item--required">
@@ -98,10 +89,7 @@ class RestaurantAddModal extends Component {
                       </div>
                       <div class="form-item form-item--required">
                           <label for="distance text-caption">거리(도보 이동 시간)</label>
-                          <filter-box type="modal-distance" option='${JSON.stringify([
-                            OPTION.INFO,
-                            ...OPTION.DISTANCE,
-                          ])}'></filter-box>
+                          <filter-box type="modalDistance" class="modal-distance" ></filter-box>
                           <p class="modal-distance-error-message"></p>
                       </div>
                       <div class="form-item">
